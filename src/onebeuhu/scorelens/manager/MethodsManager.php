@@ -85,7 +85,7 @@ class MethodsManager
      * @param string $name
      * @return bool
      */
-    #[Pure] public function isHideList(string $name) : bool
+    public function isHideList(string $name) : bool
     {
         return isset($this->hideList[$name]);
     }
