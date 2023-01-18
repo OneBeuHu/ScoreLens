@@ -1,0 +1,6 @@
+name: ScoreLens
+api: [4.0.0]
+main: onebeuhu\scorelens\Loader
+version: 1.0.0
+author: OneBeuHu
+website: https://vk.com/itaranovilya
