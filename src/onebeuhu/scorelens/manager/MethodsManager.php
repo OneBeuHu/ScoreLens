@@ -2,7 +2,6 @@
 
 namespace onebeuhu\scorelens\manager;
 
-use JetBrains\PhpStorm\Pure;
 use pocketmine\network\mcpe\protocol\PlaySoundPacket;
 use pocketmine\network\mcpe\protocol\RemoveObjectivePacket;
 use pocketmine\player\Player;
