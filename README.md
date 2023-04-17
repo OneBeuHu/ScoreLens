@@ -5,14 +5,14 @@ This is a convenient and easy to use API for creating scoreboards. Works on Pock
 Example application:
 
 ```
-$scoreboard = new ScoreBoard("Test", 8, $player);
+$scoreboard = new ScoreBoard("Test", 8);
 
 $scoreboard->setLine(2, "Hello!");
 $scoreboard->setLine(5, "This ScoreBoard");
 $scoreboard->setLine(6, "was created");
 $scoreboard->setLine(7, "with an ScoreLens");
 
-$scoreboard->sendToPlayer();
+$scoreboard->sendTo($player);
 ```
 
 
