@@ -17,8 +17,8 @@ class EventListener implements Listener
         $name = $event->getPlayer()->getName();
 
         if(MethodManager::getInstance()->isHideList($name))
-		{
-			MethodManager::getInstance()->unsetHideList($name);
-		}
+	{
+		MethodManager::getInstance()->unsetHideList($name);
+	}
     }
 }
