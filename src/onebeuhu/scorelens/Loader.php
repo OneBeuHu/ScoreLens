@@ -18,7 +18,7 @@ class Loader extends PluginBase
         $server = $this->getServer();
 
         $methods = new MethodsManager($server);
-        $this->getServer()->getPluginManager()->registerEvents(new EventListener($methods), $this);
+        $server->getPluginManager()->registerEvents(new EventListener($methods), $this);
 
         $server->getCommandMap()->register('player', new HideScoreboardCommand());
     }
