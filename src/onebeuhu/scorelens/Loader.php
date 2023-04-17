@@ -4,7 +4,6 @@ namespace onebeuhu\scorelens;
 
 use onebeuhu\scorelens\command\HideScoreboardCommand;
 use onebeuhu\scorelens\listener\EventListener;
-use onebeuhu\scorelens\manager\MethodsManager;
 use pocketmine\plugin\PluginBase;
 
 class Loader extends PluginBase
@@ -17,10 +16,9 @@ class Loader extends PluginBase
     {
         $server = $this->getServer();
 
-        $methods = new MethodsManager($server);
-        $server->getPluginManager()->registerEvents(new EventListener($methods), $this);
+        $server->getPluginManager()->registerEvents(new EventListener(), $this);
 
-        $server->getCommandMap()->register('player', new HideScoreboardCommand());
+        $server->getCommandMap()->register('scorelens', new HideScoreboardCommand());
     }
 
 }
