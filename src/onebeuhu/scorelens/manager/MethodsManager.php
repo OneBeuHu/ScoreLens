@@ -10,10 +10,10 @@ use pocketmine\Server;
 class MethodsManager
 {
 
-    /** @VAR $playerList array */
+    /** @var $playerList array */
     protected array $playerList = [];
 
-    /** @VAR $hideList array */
+    /** @var $hideList array */
     protected array $hideList = [];
 
     /**
