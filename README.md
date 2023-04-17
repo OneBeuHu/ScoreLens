@@ -24,7 +24,8 @@ How to update:
 Create a task in which you will send the players scorboards, it is convenient because of the fact that you can choose your own time update.
 
 
-![image](https://user-images.githubusercontent.com/109813776/213054545-ec1102f8-251b-460e-a1ec-8588d180d0b7.png)
+![image](https://user-images.githubusercontent.com/109813776/232541099-58d3d84b-1d65-424d-90cf-7a2337038e3e.png)
+
 
 
 
