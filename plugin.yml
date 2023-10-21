@@ -1,6 +1,7 @@
-name: ScoreLens
-api: [4.0.0]
-main: onebeuhu\scorelens\Loader
+name: fsdf
 version: 1.0.0
+main: onebeuhu\cliententityapi\Loader
+api: [5.0.0]
 author: OneBeuHu
 website: https://vk.com/itaranovilya
+load: STARTUP
