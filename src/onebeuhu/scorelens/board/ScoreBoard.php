@@ -81,7 +81,7 @@ class ScoreBoard
     {
         if($line > self::MAX_LINE_COUNT)
         {
-            Server::getInstance()->getLogger()->alert("Попытка установить контент в линию превышающую максимальную для игрока " . $this->player->getName());
+            Server::getInstance()->getLogger()->alert("Attempt to set the content in a line exceeding the maximum for the player " . $this->player->getName());
             return;
         }
 
