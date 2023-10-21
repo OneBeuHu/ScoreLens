@@ -1,41 +1,44 @@
 # ScoreLens
-This is a convenient and easy to use API for creating scoreboards. Works on PocketMine-MP 4
+This is a convenient and easy to use API for creating scoreboards. Works on PocketMine-MP 5
 
 # Using
 Example application:
 
 ```
-$scoreboard = new ScoreBoard("Test", 8);
+if(is_null($board = ScoreBoard::create($player, [
+    2 => "§aName:§f " . $player->getName(),
+    3 => "§acreated via",
+    4 => "§aScoreLens",
+    6 => "§aOnline:§f "  . count(Server::getInstance()->getOnlinePlayers()),
+    7 => "§gYour website"
+    ])))
+{
+  return;
+}
 
-$scoreboard->setLine(2, "Hello!");
-$scoreboard->setLine(5, "This ScoreBoard");
-$scoreboard->setLine(6, "was created");
-$scoreboard->setLine(7, "with an ScoreLens");
-
-$scoreboard->sendTo($player);
+$board->setName("§l§cTest§fName");
+$board->show();
 ```
 
 
 Result:
 
-![image](https://user-images.githubusercontent.com/109813776/213054045-cd7737cf-33a8-443e-bb37-ad091d3aef44.png)
+![image](https://github.com/OneBeuHu/ScoreLens/assets/109813776/bc3d7904-4cc3-4a3c-8317-a3588d698058)
+
 
 How to update:
 Create a task in which you will send the players scorboards, it is convenient because of the fact that you can choose your own time update.
 
 
-![image](https://user-images.githubusercontent.com/109813776/232541099-58d3d84b-1d65-424d-90cf-7a2337038e3e.png)
+![image](https://github.com/OneBeuHu/ScoreLens/assets/109813776/d3646aa6-70a9-493c-8f12-6ae828fff4ed)
 
 
 
 
-As you can see from the photo below - the update is happening
-
-
-![scorelensuupd](https://user-images.githubusercontent.com/109813776/213055006-e2b1bd63-1b57-47dc-a59f-0856ed68eac7.png)
 
 # Commands
 
-hsc - Hide or show the scoreboard, also has a sound
+board - Hide or show the scoreboard, also has a sound
 
-![image](https://user-images.githubusercontent.com/109813776/213057064-d60be274-cc1b-4327-a95f-7fe979507e51.png)
+![image](https://github.com/OneBeuHu/ScoreLens/assets/109813776/6b121cc0-28e5-4e84-91b8-fb6994d5eb6f)
+
