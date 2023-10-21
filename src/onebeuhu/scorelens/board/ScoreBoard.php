@@ -2,120 +2,165 @@
 
 namespace onebeuhu\scorelens\board;
 
-use onebeuhu\scorelens\manager\MethodManager;
-use pocketmine\network\mcpe\protocol\SetDisplayObjectivePacket;
-use pocketmine\network\mcpe\protocol\SetScorePacket;
-use pocketmine\network\mcpe\protocol\types\ScorePacketEntry;
+use onebeuhu\scorelens\displayer\ScoreboardDisplayer;
 use pocketmine\player\Player;
 use pocketmine\Server;
 
 class ScoreBoard
 {
 
-    /**
-     * @var string
-     */
-    protected string $scoreboardName = "";
+    protected CONST MAX_LINE_COUNT = 16;
+
+    /**  @var string */
+    private string $name = "ScoreBoard";
+    private string $objectiveName = "";
+
+    /**  @var array */
+    private array $contents = [];
+
+    /** @var bool  */
+    private bool $isHidden = true;
 
     /**
-     * @var int
+     * @param Player $player
+     * @param int $unicalBoardId
+     * @param array $contents
      */
-    protected int $lineCount = 0;
-
-    /**
-     * @var int
-     */
-    protected int $scoreboardId = 0;
-
-    /**
-     * @var array
-     */
-    protected array $contents = [];
-
-    /**
-     * @param string $scoreboardName
-     * @param int $lineCount
-     */
-    public function __construct(string $scoreboardName, int $lineCount)
+    public function __construct(private Player $player, private int $unicalBoardId, array $contents)
     {
-
-        $this->scoreboardName = $scoreboardName;
-
-        if($lineCount > 16)
+        if(BoardManager::hasBoard($this->player))
         {
-            Server::getInstance()->getLogger()->critical("You tried to create a scoreboard with more than 16 lines");
+            BoardManager::removeBoard($this->player);
         }
-        $this->lineCount = $lineCount;
 
-        for ($line = 1; $line <= $lineCount; $line++)
+        BoardManager::addBoard($this);
+        $this->objectiveName = $this->player->getName();
+
+        for ($line = 1; $line <= array_key_last($contents); $line++)
         {
-
-            $this->setLine($line, str_repeat(" ", $line));
+            isset($contents[$line]) ? ($this->contents[$line] = $contents[$line]) : ($this->contents[$line] = str_repeat(' ', $line));
         }
     }
 
     /**
-     * Sends a scoreboard to the player if possible
-     *
-     * @return void
+     * @param Player $player
+     * @return static
      */
-    public function sendTo(Player $player) : void
+    public static function create(Player $player, array $contents = []) : ?self
     {
-        $name = $player->getName();
+       if($player->isConnected())
+       {
+           return new ScoreBoard($player, BoardManager::nextUnicalId(), $contents);
+       }
 
-        if(!MethodManager::getInstance()->isHideList($name))
-        {
-			MethodManager::getInstance()->removeScoreBoard($player, $name);
-
-            $pk = new SetDisplayObjectivePacket();
-            $pk->displaySlot = $pk::DISPLAY_SLOT_SIDEBAR;
-            $pk->objectiveName = $name;
-            $pk->displayName = $this->scoreboardName;
-            $pk->criteriaName = "dummy";
-            $pk->sortOrder = 0;
-
-            $player->getNetworkSession()->sendDataPacket($pk);
-
-            $lines = 1;
-
-            foreach ($this->contents as $content)
-            {
-
-                $entries = new ScorePacketEntry();
-                $entries->type = ScorePacketEntry::TYPE_FAKE_PLAYER;
-                $entries->objectiveName = $name;
-                $entries->customName = $content;
-                $entries->score = $lines;
-                $entries->scoreboardId = $this->scoreboardId;
-
-                $pk = new SetScorePacket();
-                $pk->type = 0;
-                $pk->entries[] = $entries;
-                $player->getNetworkSession()->sendDataPacket($pk);
-
-                $this->scoreboardId++;
-                $lines++;
-            }
-        }
+       return null;
     }
 
     /**
-     * Changes the line on the selected line to $content
-     *
-     * @param int $lineNumber
+     * @return Player
+     */
+    public function getPlayer(): Player
+    {
+        return $this->player;
+    }
+
+    /**
+     * @return int
+     */
+    public function getUnicalBoardId() : int
+    {
+        return $this->unicalBoardId;
+    }
+
+    /**
+     * @param int $line
      * @param string $content
      * @return void
      */
-    public function setLine(int $lineNumber, string $content) : void
+    public function setLine(int $line, string $content) : void
     {
-        if($lineNumber > $this->lineCount)
+        if($line > self::MAX_LINE_COUNT)
         {
-            Server::getInstance()->getLogger()->warning("You are trying to change line number " . $lineNumber . " even though there are only " . $this->lineCount);
-
+            Server::getInstance()->getLogger()->alert("Попытка установить контент в линию превышающую максимальную для игрока " . $this->player->getName());
             return;
         }
 
-        $this->contents[$lineNumber] = $content;
+        if(!$this->player->isConnected())
+        {
+            $this->remove();
+            return;
+        }
+
+        ScoreboardDisplayer::handleLine($this, $line, $content);
+        $this->contents[$line] = $content;
+    }
+
+    /**
+     * @return array
+     */
+    public function getContents(): array
+    {
+        return $this->contents;
+    }
+
+    /**
+     * @return void
+     */
+    public function hide() : void
+    {
+        $this->isHidden = true;
+        ScoreboardDisplayer::handleHide($this);
+    }
+
+    /**
+     * @return void
+     */
+    public function show() : void
+    {
+        $this->isHidden = false;
+        ScoreboardDisplayer::handleShow($this);
+    }
+
+    /**
+     * @return string
+     */
+    public function getName() : string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     * @return void
+     */
+    public function setName(string $name) : void
+    {
+        $this->name = $name;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isHidden(): bool
+    {
+        return $this->isHidden;
+    }
+
+    /**
+     * @return string
+     */
+    public function getObjectiveName() : string
+    {
+        return $this->objectiveName;
+    }
+
+    /**
+     * @return void
+     */
+    public function remove() : void
+    {
+        BoardManager::removeBoard($this->player);
+        ScoreboardDisplayer::handleRemove($this);
     }
 
 }
