@@ -74,7 +74,7 @@ class ScoreboardDisplayer
             return;
         }
 
-        //$scoreBaord->getPlayer()->getNetworkSession()->sendDataPacket(SetScorePacket::create(SetScorePacket::TYPE_REMOVE, [self::$cache[$scoreBaord->getUnicalBoardId()][$line]]));
+        $scoreBaord->getPlayer()->getNetworkSession()->sendDataPacket(SetScorePacket::create(SetScorePacket::TYPE_REMOVE, [self::$cache[$scoreBaord->getUnicalBoardId()][$line]]));
 
         $entries = new ScorePacketEntry();
         $entries->type = ScorePacketEntry::TYPE_FAKE_PLAYER;
