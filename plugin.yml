@@ -1,5 +1,5 @@
 name: ScoreLens
-version: 2.1.0
+version: 2.2.1
 main: onebeuhu\scorelens\Loader
 api: [5.0.0]
 author: OneBeuHu
