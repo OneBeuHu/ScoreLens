@@ -3,8 +3,8 @@
 namespace onebeuhu\scorelens\board;
 
 use onebeuhu\scorelens\displayer\ScoreboardDisplayer;
+use onebeuhu\scorelens\utils\LineException;
 use pocketmine\player\Player;
-use pocketmine\Server;
 
 class ScoreBoard
 {
@@ -14,6 +14,7 @@ class ScoreBoard
     /**  @var string */
     private string $name = "ScoreBoard";
     private string $objectiveName = "";
+    private string $boardScene = "";
 
     /**  @var array */
     private array $contents = [];
@@ -26,7 +27,7 @@ class ScoreBoard
      * @param int $unicalBoardId
      * @param array $contents
      */
-    public function __construct(private Player $player, private int $unicalBoardId, array $contents)
+    protected function __construct(private Player $player, private int $unicalBoardId, array $contents, string $scene)
     {
         if(BoardManager::hasBoard($this->player))
         {
@@ -35,6 +36,12 @@ class ScoreBoard
 
         BoardManager::addBoard($this);
         $this->objectiveName = $this->player->getName();
+        $this->boardScene = $scene;
+
+        if(array_key_last($contents) > self::MAX_LINE_COUNT)
+        {
+            throw LineException::wrap($this->player->getName());
+        }
 
         for ($line = 1; $line <= array_key_last($contents); $line++)
         {
@@ -46,11 +53,11 @@ class ScoreBoard
      * @param Player $player
      * @return static
      */
-    public static function create(Player $player, array $contents = []) : ?self
+    public static function create(Player $player, array $contents = [], string $scene = "default") : ?self
     {
        if($player->isConnected())
        {
-           return new ScoreBoard($player, BoardManager::nextUnicalId(), $contents);
+           return new ScoreBoard($player, BoardManager::nextUnicalId(), $contents, $scene);
        }
 
        return null;
@@ -81,8 +88,7 @@ class ScoreBoard
     {
         if($line > self::MAX_LINE_COUNT)
         {
-            Server::getInstance()->getLogger()->alert("Attempt to set the content in a line exceeding the maximum for the player " . $this->player->getName());
-            return;
+            throw LineException::wrap($this->player->getName());
         }
 
         if(!$this->player->isConnected())
@@ -163,4 +169,20 @@ class ScoreBoard
         ScoreboardDisplayer::handleRemove($this);
     }
 
+    /**
+     * @param string $scene
+     * @return void
+     */
+    public function setScene(string $scene) : void
+    {
+        $this->boardScene = $scene;
+    }
+
+    /**
+     * @return string
+     */
+    public function getScene() : string
+    {
+        return $this->boardScene;
+    }
 }
